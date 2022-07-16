@@ -13,11 +13,13 @@ assn_num = 3
 
 
 def random_matrix(mn, mx, rows, cols):
-    return [[random.randint(mn, mx) for col in range(0, cols)] for row in range(0, rows)]
-
+    #return [[random.randint(mn, mx) for col in range(0, cols)] for row in range(0, rows)]
+    matrix = [[random.randint(mn, mx) for col in range(0, cols)] for row in range(0, rows)]
+    return np.array(matrix)
 
 def all_ones_matrix(mn, nx, rows, cols):
-    return [[1 for col in range(0, cols)] for row in range(0,rows)]
+    matrix = [[1 for col in range(0, cols)] for row in range(0, rows)]
+    return np.array(matrix)
 
 
 def print_matrix(matrix):
@@ -40,20 +42,24 @@ def simple_mult(m1, m2):
     return m3
 
 
-def matrix_split(matrix):
-    row, col = matrix.shape
-    row2, col2 = row//2, col//2
-    return matrix[:row2, :col2], matrix[:row2, col2:], matrix[row2:, :col2], matrix[row2:, col2:]
-
-
 def strassen_mult(m1, m2):
-    if len(m1) == 1:
+    if len(m1) == 1 or len(m2) == 1:
         return m1 * m2
 
-    a, b, c, d = matrix_split(m1)
-    e, f, g, h = matrix_split(m2)
+    n = m1.shape[0]
+    if n % 2 == 1:
+        m1 = np.pad(m1, (0, 1), mode='constant')
+        m2 = np.pad(m2, (0, 1), mode='constant')
 
-    # Computing the 7 products, recursively (p1, p2...p7)
+    m = int(np.ceil(n / 2))
+    a = m1[: m, : m]
+    b = m1[: m, m:]
+    c = m1[m:, : m]
+    d = m1[m:, m:]
+    e = m2[: m, : m]
+    f = m2[: m, m:]
+    g = m2[m:, : m]
+    h = m2[m:, m:]
     p1 = strassen_mult(a, f - h)
     p2 = strassen_mult(a + b, h)
     p3 = strassen_mult(c + d, e)
@@ -61,14 +67,13 @@ def strassen_mult(m1, m2):
     p5 = strassen_mult(a + d, e + h)
     p6 = strassen_mult(b - d, g + h)
     p7 = strassen_mult(a - c, e + f)
-    c11 = p5 + p4 - p2 + p6
-    c12 = p1 + p2
-    c21 = p3 + p4
-    c22 = p1 + p5 - p3 - p7
+    result = np.zeros((2 * m, 2 * m), dtype=np.int32)
+    result[: m, : m] = p5 + p4 - p2 + p6
+    result[: m, m:] = p1 + p2
+    result[m:, : m] = p3 + p4
+    result[m:, m:] = p1 + p5 - p3 - p7
 
-    c = np.vstack((np.hstack((c11, c12)), np.hstack((c21, c22))))
-
-    return native_mult(m1, m2)
+    return result[: n, : n]
 
 
 def plot_time(dict_algs, sizes, algs, trials):
@@ -101,17 +106,14 @@ def main():
         for trial in range(1, trials + 1):
             m1 = all_ones_matrix(-1, 1, size, size)
             m2 = all_ones_matrix(-1, 1, size, size)
+            #m1 = random_matrix(-1, 1, size, size)
             #m2 = random_matrix(-1, 1, size, size)
-            #m2 = random_matrix(-1, 1, size, size)
-            print_matrix(m1)
-            print_matrix(m2)
             for alg in algs:
                 start_time = time.time()
                 m3 = alg(m1, m2)
                 end_time = time.time()
                 net_time = end_time - start_time
                 dict_algs[alg.__name__][size] += 1000 * net_time
-                print_matrix(m3)
     pd.set_option("display.max_rows", 500)
     pd.set_option("display.max_columns", 500)
     pd.set_option("display.width", 1000)
