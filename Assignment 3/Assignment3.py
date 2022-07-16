@@ -13,7 +13,6 @@ assn_num = 3
 
 
 def random_matrix(mn, mx, rows, cols):
-    #return [[random.randint(mn, mx) for col in range(0, cols)] for row in range(0, rows)]
     matrix = [[random.randint(mn, mx) for col in range(0, cols)] for row in range(0, rows)]
     return np.array(matrix)
 
@@ -22,6 +21,7 @@ def all_ones_matrix(mn, nx, rows, cols):
     return np.array(matrix)
 
 
+# From https://stackoverflow.com/questions/17870612/printing-a-two-dimensional-array-in-python
 def print_matrix(matrix):
     print('\n'.join([''.join(['{:4}'.format(item) for item in row])for row in matrix]) + "\n")
 
@@ -30,6 +30,7 @@ def native_mult(m1, m2):
     return np.dot(m1, m2)
 
 
+# From https://www.geeksforgeeks.org/c-program-multiply-two-matrices/
 def simple_mult(m1, m2):
     rows = len(m1)
     cols = len(m2[0])
@@ -42,6 +43,7 @@ def simple_mult(m1, m2):
     return m3
 
 
+# From https://www.interviewbit.com/blog/strassens-matrix-multiplication/
 def strassen_mult(m1, m2):
     if len(m1) == 1 or len(m2) == 1:
         return m1 * m2
