@@ -7,7 +7,7 @@ import numpy as np
 import random
 import time
 import pandas as pd
-import matplotlib.pyplot as pl
+import matplotlib.pyplot as plt
 
 assn_num = 3
 
