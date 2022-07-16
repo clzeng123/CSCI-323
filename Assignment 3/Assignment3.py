@@ -16,7 +16,7 @@ def random_matrix(mn, mx, rows, cols):
     return [[random.randint(mn, mx) for col in range(0, cols)] for row in range(0, rows)]
 
 
-def all_ones_martix(mn, nx, rows, cols):
+def all_ones_matrix(mn, nx, rows, cols):
     return [[1 for col in range(0, cols)] for row in range(0,rows)]
 
 
@@ -41,8 +41,7 @@ def simple_mult(m1, m2):
 
 
 def matrix_split(matrix):
-    row = len(matrix)
-    col = len(matrix[0])
+    row, col = matrix.shape
     row2, col2 = row//2, col//2
     return matrix[:row2, :col2], matrix[:row2, col2:], matrix[row2:, :col2], matrix[row2:, col2:]
 
@@ -62,6 +61,13 @@ def strassen_mult(m1, m2):
     p5 = strassen_mult(a + d, e + h)
     p6 = strassen_mult(b - d, g + h)
     p7 = strassen_mult(a - c, e + f)
+    c11 = p5 + p4 - p2 + p6
+    c12 = p1 + p2
+    c21 = p3 + p4
+    c22 = p1 + p5 - p3 - p7
+
+    c = np.vstack((np.hstack((c11, c12)), np.hstack((c21, c22))))
+
     return native_mult(m1, m2)
 
 
@@ -93,8 +99,8 @@ def main():
         for alg in algs:
             dict_algs[alg.__name__][size] = 0
         for trial in range(1, trials + 1):
-            m1 = all_ones_martix(-1, 1, size, size)
-            m2 = all_ones_martix(-1, 1, size, size)
+            m1 = all_ones_matrix(-1, 1, size, size)
+            m2 = all_ones_matrix(-1, 1, size, size)
             #m2 = random_matrix(-1, 1, size, size)
             #m2 = random_matrix(-1, 1, size, size)
             print_matrix(m1)
