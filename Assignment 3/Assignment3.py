@@ -88,10 +88,10 @@ def plot_time(dict_algs, sizes, algs, trials):
         y_axis = [d[i] for i in sizes]
         plt.bar(x_axis, y_axis, width=0.05, alpha=0.75, label=algs.__name__)
     plt.legend()
-    plt.title("Run time of Algorithms")
+    plt.title("Run time for Matrix Multiplication")
     plt.xlabel("Size of data")
     plt.ylabel("Time for " + str(trials) + "trials (ms)")
-    plt.savefig("Assignment3" + str(assn_num) + ".png")
+    plt.savefig("Assignment" + str(assn_num) + ".png")
     plt.show()
 
 
