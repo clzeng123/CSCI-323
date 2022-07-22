@@ -30,11 +30,28 @@ def build_cuckoo_hash(data):
     pass
 
 
+def search_chaining_hash(data):
+    pass
+
+
+def search_quad_hash(data):
+    pass
+
+
+def search_double_hash(data):
+    pass
+
+
+def search_cuckoo_hash(data):
+    pass
+
+
 def pseudo_random_list(n):
     data = [0]
     for i in range(1, n):
         data.append(data[i-1]+random.randint(1, 10))
-    return random.shuffle(data)
+    random.shuffle(data)
+    return data
 
 
 # get random subset of size items from data list
@@ -71,11 +88,15 @@ def main():
     search_functions = [search_chaining_hash, search_quad_hash, search_double_hash, search_cuckoo_hash]
     dict_build = {}
     dict_search = {}
-    for algo in structs:
-        dict_algos[algo.__name__] = {}
+    for build in build_functions:
+        dict_build[build.__name__] = {}
+    for search in search_functions:
+        dict_search[search.__name__] = {}
     for size in sizes:
-        for algo in structs:
-            dict_algos[algo.__name__][size] = 0
+        for build in build_functions:
+            dict_build[build.__name__][size] = 0
+        for search in search_functions:
+            dict_search[search.__name__][size] = 0
         for trial in range(1, trials + 1):
             data = pseudo_random_list(size)
             sublist = get_random_sublist(data, 100)
@@ -100,9 +121,16 @@ def main():
     pd.set_option("display.max_rows", 500)
     pd.set_option("display.max_columns", 500)
     pd.set_option("display.width", 1000)
-    df = pd.DataFrame.from_dict(dict_algos).T
+    df = pd.DataFrame.from_dict(dict_build).T
     print(df)
-    plot_time(dict_algos, sizes, structs, trials)
+    plot_time(dict_build, sizes, build_functions, trials)
+
+    pd.set_option("display.max_rows", 500)
+    pd.set_option("display.max_columns", 500)
+    pd.set_option("display.width", 1000)
+    df = pd.DataFrame.from_dict(dict_search).T
+    print(df)
+    plot_time(dict_search, sizes, search_functions, trials)
 
 
 if __name__ == "__main__":
