@@ -4,22 +4,59 @@
 # Changli Zeng
 
 
-import copy
 import numpy as np
 import random
 import time
 import pandas as pd
 import matplotlib.pyplot as plt
 
-assn_num = 3
+assn_num = 4
 
 
 def build_chaining_hash(data):
-    pass
+    hash_table = [[] for _ in range(len(data))]
+    for num in data:
+        hash_key = num % len(data)
+        hash_table[hash_key].append(num)
+    return hash_table
 
 
+# From https://www.geeksforgeeks.org/quadratic-probing-in-hashing/
 def build_quad_hash(data):
-    pass
+    # create table
+    hash_table = [[] for _ in range(len(data))]
+
+    # Initializing the hash table
+    for i in range(len(data)):
+        hash_table[i] = -1
+
+    for i in range(len(data)):
+        # Computing the hash value
+        hash_key = data[i] % len(hash_table)
+
+        # Insert in the table if there
+        # is no collision
+        if hash_table[hash_key] == -1:
+            hash_table[hash_key] = data[i]
+
+        else:
+
+            # If there is a collision
+            # iterating through all
+            # possible quadratic values
+            for j in range(len(data)):
+
+                # Computing the new hash value
+                t = (hash_key + j * j) % len(hash_table)
+
+                if hash_table[t] == -1:
+                    # Break the loop after
+                    # inserting the value
+                    # in the table
+                    hash_table[t] = data[i]
+                    break
+    return hash_table
+
 
 
 def build_double_hash(data):
@@ -83,7 +120,7 @@ def main():
     hash_cuckoo = None
 
     sizes = [100 * i for i in range(1, 11)]
-    trials = 1
+    trials = 100
     build_functions = [build_chaining_hash, build_quad_hash, build_double_hash, build_cuckoo_hash]
     search_functions = [search_chaining_hash, search_quad_hash, search_double_hash, search_cuckoo_hash]
     dict_build = {}
@@ -108,15 +145,15 @@ def main():
                 net_time = end_time - start_time
                 dict_build[build.__name__][size] += 1000 * net_time
 
-            for i in len(search_functions):
-                search = search_functions[i]
-                table = hash_tables[i]
-                start_time = time.time()
-                for item in sublist:
-                    search(table, item)
-                end_time = time.time()
-                net_time = end_time - start_time
-                dict_search[search.__name__][size] += 1000 * net_time
+                #         for i in len(search_functions):
+                #             search = search_functions[i]
+                #            table = hash_tables[i]
+                #            start_time = time.time()
+                #            for item in sublist:
+                #                search(table, item)
+                #            end_time = time.time()
+                #           net_time = end_time - start_time
+                #           dict_search[search.__name__][size] += 1000 * net_time
 
     pd.set_option("display.max_rows", 500)
     pd.set_option("display.max_columns", 500)
