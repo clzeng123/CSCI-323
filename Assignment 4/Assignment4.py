@@ -233,12 +233,7 @@ def plot_time(dict_algos, sizes, algos, trials, name):
 
 
 def main():
-    hash_chaining = None
-    hash_quadratic = None
-    hash_double = None
-    hash_cuckoo = None
-
-    sizes = [10000 * i for i in range(1, 11)]
+    sizes = [1000 * i for i in range(1, 11)]
     trials = 10
     build_functions = [build_chaining_hash, build_quad_hash, build_double_hash, build_cuckoo_hash]
     search_functions = [search_chaining_hash, search_quad_hash, search_double_hash, search_cuckoo_hash]
@@ -256,24 +251,23 @@ def main():
         for trial in range(1, trials + 1):
             data = pseudo_random_list(size)
             sublist = get_random_sublist(data, 100)
-            hash_tables = []
+            hash_table = []
             for build in build_functions:
-                start_time = time.time()
-                hash_tables.append(build(data))
+                stat_time = time.time()
+                hash_table.append(build(data))
                 end_time = time.time()
-                net_time = end_time - start_time
+                net_time = end_time - stat_time
                 dict_build[build.__name__][size] += 1000 * net_time
 
             for i in range(len(search_functions)):
                 search = search_functions[i]
-                table = hash_tables[i]
+                table = hash_table[i]
+                stat_time = time.time()
                 for item in sublist:
                     search(table, item)
-                    start_time = time.time()
-                    end_time = time.time()
-                    net_time = end_time - start_time
-                    dict_search[search.__name__][size] += 1000 * net_time
-
+                end_time = time.time()
+                net_time = end_time - stat_time
+                dict_search[search.__name__][size] += 1000 * net_time
     pd.set_option("display.max_rows", 500)
     pd.set_option("display.max_columns", 500)
     pd.set_option("display.width", 1000)
@@ -281,8 +275,8 @@ def main():
     print(df)
     ds = pd.DataFrame.from_dict(dict_search).T
     print(ds)
-    plot_time(dict_build, sizes, build_functions, trials, "4a")
-    plot_time(dict_search, sizes, search_functions, trials, "4b")
+    plot_time(dict_build, sizes, build_functions, trials, "4A")
+    plot_time(dict_search, sizes, search_functions, trials, "4B")
 
 
 if __name__ == "__main__":
