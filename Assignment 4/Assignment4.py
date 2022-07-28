@@ -238,7 +238,7 @@ def main():
     hash_double = None
     hash_cuckoo = None
 
-    sizes = [1000 * i for i in range(1, 11)]
+    sizes = [10000 * i for i in range(1, 11)]
     trials = 10
     build_functions = [build_chaining_hash, build_quad_hash, build_double_hash, build_cuckoo_hash]
     search_functions = [search_chaining_hash, search_quad_hash, search_double_hash, search_cuckoo_hash]
@@ -267,9 +267,10 @@ def main():
             for i in range(len(search_functions)):
                 search = search_functions[i]
                 table = hash_tables[i]
-                start_time = time.time()
                 for item in sublist:
                     search(table, item)
+                    start_time = time.time()
+                    end_time = time.time()
                     net_time = end_time - start_time
                     dict_search[search.__name__][size] += 1000 * net_time
 
