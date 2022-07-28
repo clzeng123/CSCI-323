@@ -22,6 +22,44 @@ def build_chaining_hash(data):
     return hash_table
 
 
+def search_chaining_hash(table, num):
+    size = len(table)
+    hashkey = num % size
+    if table[hashkey] == num:
+        return True
+    else
+
+
+def build_double_hash(datas):
+    size = len(datas)*5
+    hash_table  = [None for i in range(size)]
+
+    for num in datas:
+        hash1 = num % size
+        if not hash_table[hash1]:
+                hash_table[hash1] = num
+        else:
+            hash2 = prime(num) - num % prime(num)
+            inserted = False
+            i = 1
+            while not inserted:
+                if i > size:
+                    print("cant find place to insert")
+                    break
+                hash_combo = (hash1 + hash2 * i)%size
+                if not hash_table[hash_combo]
+                    hash_table[hash_combo] = num
+                    inserted = True
+                else:
+                    i+= 1
+    return False
+
+
+def search_double_hash(table, num):
+
+
+
+
 # From https://www.geeksforgeeks.org/quadratic-probing-in-hashing/
 def build_quad_hash(data):
     # create table
