@@ -200,7 +200,7 @@ def boyer_moore_search(text, pattern):
     return -1
 
 
-def plot_time(dict_algs, algs, trails):
+def plot_time(dict_algs, sizes, algs, trails):
     alg_num = 0
     plt.xticks([j for j in range(len(sizes))], [str(size) for size in sizes])
     for algs in algs:
@@ -218,18 +218,23 @@ def plot_time(dict_algs, algs, trails):
 
 
 def run_trials():
-    sizes = [10 * i for i in range(1, 2)]
-    trials = 1
+    sizes = [10 * i for i in range(1, 11)]
+    trials = 100
     algs = [native_search, brute_force_search, rabin_karp_search, knuth_morris_pratt_search, boyer_moore_search]
     dict_algs = {}
     for alg in algs:
         dict_algs[alg.__name__] = {}
+    for size in sizes:
         for alg in algs:
             dict_algs[alg.__name__][size] = 0
         for trial in range(1, trials + 1):
             for alg in algs:
+                text = read_file1("Assignment6_Text1.txt")
+                pattern = read_file2("Assignment6_Patterns.txt")
                 start_time = time.time()
-                idx = alg(text='', pattern='', verbose=True)
+                for i in range(len(text)):
+                    for j in range(len(pattern)):
+                        alg(text[i], pattern[j])
                 end_time = time.time()
                 net_time = end_time - start_time
                 dict_algs[alg.__name__][size] += 1000 * net_time
@@ -238,7 +243,31 @@ def run_trials():
     pd.set_option("display.width", 1000)
     df = pd.DataFrame.from_dict(dict_algs).T
     print(df)
-    plot_time(dict_algs, algs, trials)
+    plot_time(dict_algs, sizes, algs, trials)
+
+
+def read_file1(file):
+    result = []
+    with open(file) as file_text:
+        texts = file_text.readlines()
+        for text in texts:
+            text = text.upper()  # convert to upper case
+            text = re.sub(r'[^A-Z]', '', text)  # remove all non-alphabet chars
+            if text == '':
+                break
+            result.append(text)
+    return result
+
+
+def read_file2(file):
+    result = []
+    with open(file) as file_pattern:
+        patterns = file_pattern.readlines()
+        for pattern in patterns:
+            pattern = pattern.upper()  # convert to upper case
+            pattern = re.sub(r'[^A-Z]', '', pattern)  # remove all non-alphabet chars
+            result.append(pattern)
+    return result
 
 
 def process_file(file_name_text, file_name_pattern):
@@ -254,7 +283,7 @@ def process_file(file_name_text, file_name_pattern):
             text = re.sub(r'[^A-Z]', '', text)  # remove all non-alphabet chars
             # print(text)
             if text == '':
-                continue
+                break
             for pattern in patterns:
                 pattern = pattern.upper()  # convert to upper case
                 pattern = re.sub(r'[^A-Z]', '', pattern)  # remove all non-alphabet chars
@@ -281,8 +310,11 @@ def process_file(file_name_text, file_name_pattern):
 
 
 def main():
+    run_trials()
     process_file("Assignment6_Text1.txt", "Assignment6_Patterns.txt")
     process_file("Assignment6_Text2.txt", "Assignment6_Patterns.txt")
+    # print(read_file1("Assignment6_Text1.txt"))
+    # print(read_file2("Assignment6_Patterns.txt"))
     # print(native_search("O'er the land of the free and the home of the brave!?", "brave"))
     # print(brute_force_search("O'er the land of the free and the home of the brave!", "brave"))
     # print(rabin_karp_search("O'er the land of the free and the home of the brave!", "brave"))
