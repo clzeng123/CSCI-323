@@ -7,7 +7,6 @@
 import re
 import texttable
 import time
-import time
 import pandas as pd
 import matplotlib.pyplot as plt
 
