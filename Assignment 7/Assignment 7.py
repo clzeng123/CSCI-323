@@ -4,13 +4,14 @@
 # Changli Zeng
 
 import copy
+import heapq
 import random
 import re
 import time
-import texttable
 import pandas as pd
 import matplotlib.pyplot as plt
-from numpy import split
+
+
 assn_num = 7
 INF = 99999
 
@@ -66,11 +67,13 @@ def floyd_apsp(graph):
                 if dist[i][j] > dist[i][k] + dist[k][j]:
                     dist[i][j] = dist[i][k] + dist[k][j]
                     pred[i][j] = pred[k][j]
+    if len(graph) == 10:
+        print("floyd_apsp")
     print_solution_floyd(dist, pred)
 
 
 def print_solution_floyd(dist, pred):
-    print("Dist matrix")
+    # print("Dist matrix")
     n = len(dist)
     for i in range(n):
         for j in range(n):
@@ -80,11 +83,11 @@ def print_solution_floyd(dist, pred):
                 print("%7d\t" % (dist[i][j]), end=' ')
             if j == n - 1:
                 print()
-    print("Pred matrix")
-    for i in range(n):
-        for j in range(n):
-            print("%7d\t" % (pred[i][j]), end=' ')
-        print()
+    # print("Pred matrix")
+    # for i in range(n):
+    #     for j in range(n):
+    #         print("%7d\t" % (pred[i][j]), end=' ')
+    #     print()
 
 
 def print_graph(graph):
@@ -134,6 +137,14 @@ def bellman_ford_sssp(es, n, src):
     print(dist)
 
 
+def bellman_ford_apsp(graph):
+    if len(graph) == 10:
+        print("bellman_ford_apsp")
+    es = convert_to_edge_set(graph)
+    for i in range(len(graph)):
+         bellman_ford_sssp(es, len(graph), i)
+
+
 def min_distance(dist, done):
     n = len(dist)
     min_dist = INF
@@ -146,7 +157,7 @@ def min_distance(dist, done):
 
 
 # From: https://www.geeksforgeeks.org/dijkstras-shortest-path-algorithm-greedy-algo-7/
-def dijkstra_sssp(cm, src):
+def dijkstra_sssp_matrix(cm, src):
     n = len(cm)
     dist = [INF] * n
     dist[src] = 0
@@ -157,32 +168,126 @@ def dijkstra_sssp(cm, src):
         for y in range(n):
             if cm[x][y] > 0 and not done[y] and dist[y] > dist[x] + cm[x][y]:
                 dist[y] = dist[x] + cm[x][y]
-    print(dist)
+        print(dist)
 
 
-# still need: dijkstra with adjacency table + binary heap
-# plot
+def dijkstra_apsp_matrix(graph):
+    if len(graph) == 10:
+        print("dijkstra_apsp_matrix")
+    for i in range(len(graph)):
+        dijkstra_sssp_matrix(graph, i)
+
+
+# From https://www.geeksforgeeks.org/dijkstras-algorithm-for-adjacency-list-representation-greedy-algo-8/
+def dijkstra_sssp_table(table, src):
+    smallest = src
+    left = 2 * src + 1
+    right = 2 * src + 2
+    if (left < table.size and
+            table.array[left][1]
+            < table.array[smallest][1]):
+        smallest = left
+    if (right < table.size and
+            table.array[right][1]
+            < table.array[smallest][1]):
+        smallest = right
+    if smallest != src:
+        table.pos[table.array[smallest][0]] = src
+        table.pos[table.array[src][0]] = smallest
+        table.swapMinHeapNode(smallest, src)
+        table.dijkstra_sssp_table(smallest)
+
+
+def swapMinHeapNode(self, a, b):
+    t = self.array[a]
+    self.array[a] = self.array[b]
+    self.array[b] = t
+
+
+def dijkstra_asap_table(graph):
+    if len(graph) == 10:
+        print("dijkstra_asap_table")
+    for i in range(len(graph)):
+        dijkstra_sssp_matrix(graph, i)
+
+
+def plot_time(dict_algs, sizes, algs, trails):
+    alg_num = 0
+    plt.xticks([j for j in range(len(sizes))], [str(size) for size in sizes])
+    for algs in algs:
+        alg_num += 1
+        d = dict_algs[algs.__name__]
+        x_axis = [j + 0.05 * alg_num for j in range(len(sizes))]
+        y_axis = [d[i] for i in sizes]
+        plt.bar(x_axis, y_axis, width=0.05, alpha=0.75, label=algs.__name__)
+    plt.legend()
+    plt.title("Run time of search algorithms")
+    plt.xlabel("Size of Data")
+    plt.ylabel("Time for " + str(trails) + "Trails" "(ms)")
+    plt.savefig("Assignment" + str(assn_num) + ".png")
+    plt.show()
+
+
+def run_trials():
+    sizes = [10 * i for i in range(1, 11)]
+    trials = 1
+    algs = [floyd_apsp, bellman_ford_apsp, dijkstra_apsp_matrix, dijkstra_asap_table]
+    dict_algs = {}
+    for alg in algs:
+        dict_algs[alg.__name__] = {}
+    for size in sizes:
+        for alg in algs:
+            dict_algs[alg.__name__][size] = 0
+        for trial in range(1, trials + 1):
+                graph = random_graph(size, 100)
+
+                for alg in algs:
+                    start_time = time.time()
+                    dist = alg(graph)
+                    end_time = time.time()
+                    net_time = end_time - start_time
+                    dict_algs[alg.__name__][size] += 1000 * net_time
+                    if size == 10:
+                        print([alg.__name__])
+                        print_graph(dist)
+    pd.set_option("display.max_rows", 500)
+    pd.set_option("display.max_columns", 500)
+    pd.set_option("display.width", 1000)
+    df = pd.DataFrame.from_dict(dict_algs).T
+    print(df)
+    plot_time(dict_algs, sizes, algs, trials)
+
 
 def main():
+    run_trials()
     # am1 = read_graph("graph1.txt")
-    am1 = random_graph(5, 100)
-    # print("Cost Matrix:", am1)
-    at1 = convert_to_adj_table(am1)
-    # print("Adjacency Table:", at1)
-    es1 = convert_to_edge_set(am1)
-    # print("Edge Set:", es1)
-    print("Cost Matrix")
-    print_graph(am1)
-    print("Floyd APSP")
-    floyd_apsp(am1)
-    print("Bellman Ford SSSP")
-    for i in range(len(am1)):
-        bellman_ford_sssp(es1, len(am1), i)
+    # am1 = random_graph(10, 100)
+    # # print("Cost Matrix:", am1)
+    # at1 = convert_to_adj_table(am1)
+    # # print("Adjacency Table:", at1)
+    # es1 = convert_to_edge_set(am1)
+    # # print("Edge Set:", es1)
+    # # print("Cost Matrix")
+    # # print_graph(am1)
 
-    print("Dijkstra SSSP")
-    for i in range(len(am1)):
-        dijkstra_sssp(am1, i)
+    # print("Bellman Ford SSSP")
+    # for i in range(len(am1)):
+    #     bellman_ford_sssp(es1, len(am1), i)
 
+    # print("Dijkstra SSSP")
+    # for i in range(len(am1)):
+    #     dijkstra_sssp(am1, i)
+    # am1 = random_graph(10, 100)
+    # print("Floyd APSP")
+    # floyd_apsp(am1)
+    # print(" ")
+    # print("Bellman Ford APSP")
+    # bellman_ford_apsp(am1)
+    # print(" ")
+    # print("Dijkstra APSP")
+    # dijkstra_apsp_matrix(am1)
+    # print("Dijkstra ASAP Table")
+    # dijkstra_asap_table(am1)
 
 
 if __name__ == "__main__":
