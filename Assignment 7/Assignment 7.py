@@ -1,3 +1,4 @@
+
 # CSCI 323/700
 # Summer 2022
 # Assignment 7 - Graph Algorithms
@@ -67,8 +68,8 @@ def floyd_apsp(graph):
                 if dist[i][j] > dist[i][k] + dist[k][j]:
                     dist[i][j] = dist[i][k] + dist[k][j]
                     pred[i][j] = pred[k][j]
-    if len(graph) == 10:
-        print("floyd_apsp")
+    # if len(graph) == 10:
+    #     print("floyd_apsp")
     print_solution_floyd(dist, pred)
 
 
@@ -138,8 +139,8 @@ def bellman_ford_sssp(es, n, src):
 
 
 def bellman_ford_apsp(graph):
-    if len(graph) == 10:
-        print("bellman_ford_apsp")
+    # if len(graph) == 10:
+    #     print("bellman_ford_apsp")
     es = convert_to_edge_set(graph)
     for i in range(len(graph)):
          bellman_ford_sssp(es, len(graph), i)
@@ -168,12 +169,12 @@ def dijkstra_sssp_matrix(cm, src):
         for y in range(n):
             if cm[x][y] > 0 and not done[y] and dist[y] > dist[x] + cm[x][y]:
                 dist[y] = dist[x] + cm[x][y]
-        print(dist)
+    print(dist)
 
 
 def dijkstra_apsp_matrix(graph):
-    if len(graph) == 10:
-        print("dijkstra_apsp_matrix")
+    # if len(graph) == 10:
+    #     print("dijkstra_apsp_matrix")
     for i in range(len(graph)):
         dijkstra_sssp_matrix(graph, i)
 
@@ -205,8 +206,8 @@ def swapMinHeapNode(self, a, b):
 
 
 def dijkstra_asap_table(graph):
-    if len(graph) == 10:
-        print("dijkstra_asap_table")
+    # if len(graph) == 10:
+    #     print("dijkstra_asap_table")
     for i in range(len(graph)):
         dijkstra_sssp_matrix(graph, i)
 
@@ -273,20 +274,20 @@ def main():
     # print("Bellman Ford SSSP")
     # for i in range(len(am1)):
     #     bellman_ford_sssp(es1, len(am1), i)
-
     # print("Dijkstra SSSP")
     # for i in range(len(am1)):
     #     dijkstra_sssp(am1, i)
+
     # am1 = random_graph(10, 100)
-    # print("Floyd APSP")
+    # print("floyd_apsp")
     # floyd_apsp(am1)
     # print(" ")
-    # print("Bellman Ford APSP")
+    # print("bellman_ford_apsp")
     # bellman_ford_apsp(am1)
     # print(" ")
-    # print("Dijkstra APSP")
+    # print("dijkstra_apsp_matrix")
     # dijkstra_apsp_matrix(am1)
-    # print("Dijkstra ASAP Table")
+    # print("dijkstra_asap_table")
     # dijkstra_asap_table(am1)
 
 
