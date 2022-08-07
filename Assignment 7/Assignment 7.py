@@ -247,9 +247,9 @@ def run_trials():
                     end_time = time.time()
                     net_time = end_time - start_time
                     dict_algs[alg.__name__][size] += 1000 * net_time
-                    if size == 10:
-                        print([alg.__name__])
-                        print_graph(dist)
+                    # if size == 10:
+                    #     print([alg.__name__])
+                    #     print_graph(dist)
     pd.set_option("display.max_rows", 500)
     pd.set_option("display.max_columns", 500)
     pd.set_option("display.width", 1000)
